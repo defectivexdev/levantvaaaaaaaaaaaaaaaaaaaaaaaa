@@ -1,0 +1,47 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/weekly-tax",
+      "schedule": "0 0 * * *"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/upload",
+      "destination": "/api/cdn/upload",
+      "has": [{ "type": "host", "value": "asset.levant-va.com" }]
+    },
+    {
+      "source": "/download/:path*",
+      "destination": "/api/cdn/download?path=:path*",
+      "has": [{ "type": "host", "value": "cdn.levant-va.com" }]
+    },
+    {
+      "source": "/livery/:file*",
+      "destination": "/api/cdn/download?type=livery&file=:file*",
+      "has": [{ "type": "host", "value": "cdn.levant-va.com" }]
+    },
+    {
+      "source": "/list",
+      "destination": "/api/cdn/download",
+      "has": [{ "type": "host", "value": "cdn.levant-va.com" }]
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/acars",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
+      ]
+    },
+    {
+      "source": "/api/cdn/:path*",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" }
+      ]
+    }
+  ]
+}

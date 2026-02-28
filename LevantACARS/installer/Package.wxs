@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+
+  <Package Name="Levant ACARS"
+           Version="2.0.0"
+           Manufacturer="Levant Virtual Airlines"
+           UpgradeCode="B7E3F2A1-4C5D-4E6F-8A9B-1C2D3E4F5A6B"
+           InstallerVersion="500"
+           Scope="perUser">
+
+    <MediaTemplate EmbedCab="yes" />
+
+    <!-- Major upgrade: uninstall older versions automatically -->
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+
+    <!-- Install directory structure -->
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="LEVANTDIR" Name="LevantACARS">
+        <Directory Id="INSTALLDIR" Name="app" />
+      </Directory>
+    </StandardDirectory>
+
+    <!-- Desktop shortcut folder -->
+    <StandardDirectory Id="DesktopFolder" />
+
+    <!-- Start Menu folder -->
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="ApplicationProgramsFolder" Name="Levant ACARS" />
+    </StandardDirectory>
+
+    <!-- Main feature -->
+    <Feature Id="Main" Title="Levant ACARS" Level="1">
+      <ComponentGroupRef Id="AppFiles" />
+      <ComponentGroupRef Id="ReactFiles" />
+      <ComponentRef Id="DesktopShortcut" />
+      <ComponentRef Id="StartMenuShortcut" />
+    </Feature>
+
+    <!-- App binaries harvested from publish output -->
+    <ComponentGroup Id="AppFiles" Directory="INSTALLDIR">
+      <Files Include="publish\**"
+             Exclude="publish\wwwroot\**" />
+    </ComponentGroup>
+
+    <!-- React dist (wwwroot) -->
+    <ComponentGroup Id="ReactFiles" Directory="INSTALLDIR">
+      <Files Include="publish\wwwroot\**" />
+    </ComponentGroup>
+
+    <!-- Desktop Shortcut -->
+    <Component Id="DesktopShortcut" Directory="DesktopFolder" Guid="C1A2B3D4-E5F6-7890-ABCD-EF1234567890">
+      <Shortcut Id="DesktopLink"
+                Name="Levant ACARS"
+                Description="Levant VA Flight Tracking Client"
+                Target="[INSTALLDIR]LevantACARS.exe"
+                WorkingDirectory="INSTALLDIR"
+                Icon="AppIcon" />
+      <RegistryValue Root="HKCU"
+                     Key="Software\LevantVA\ACARS"
+                     Name="DesktopShortcut"
+                     Type="integer" Value="1"
+                     KeyPath="yes" />
+    </Component>
+
+    <!-- Start Menu Shortcut -->
+    <Component Id="StartMenuShortcut" Directory="ApplicationProgramsFolder" Guid="D2B3C4E5-F6A7-8901-BCDE-F23456789012">
+      <Shortcut Id="StartMenuLink"
+                Name="Levant ACARS"
+                Description="Levant VA Flight Tracking Client"
+                Target="[INSTALLDIR]LevantACARS.exe"
+                WorkingDirectory="INSTALLDIR"
+                Icon="AppIcon" />
+      <RemoveFolder Id="CleanStartMenu" On="uninstall" />
+      <RegistryValue Root="HKCU"
+                     Key="Software\LevantVA\ACARS"
+                     Name="StartMenuShortcut"
+                     Type="integer" Value="1"
+                     KeyPath="yes" />
+    </Component>
+
+    <!-- Icon -->
+    <Icon Id="AppIcon" SourceFile="LevantACARS\LevantACARS\Assets\favicon.ico" />
+
+  </Package>
+</Wix>

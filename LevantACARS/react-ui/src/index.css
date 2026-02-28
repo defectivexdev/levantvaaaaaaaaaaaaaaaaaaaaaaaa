@@ -1,0 +1,560 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Custom Fonts ──────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Winky Sans';
+  src: url('../Assets/Fonts/WinkySans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Winky Sans';
+  src: url('../Assets/Fonts/WinkySans-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Winky Sans';
+  src: url('../Assets/Fonts/WinkySans-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Winky Sans';
+  src: url('../Assets/Fonts/WinkySans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Winky Sans';
+  src: url('../Assets/Fonts/WinkySans-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Winky Sans';
+  src: url('../Assets/Fonts/WinkySans-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('../Assets/Fonts/Manrope-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('../Assets/Fonts/Manrope-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('../Assets/Fonts/Manrope-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('../Assets/Fonts/Manrope-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('../Assets/Fonts/Manrope-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sour Gummy';
+  src: url('https://fonts.googleapis.com/css2?family=Sour+Gummy:wght@400;500;600;700&display=swap');
+  font-weight: 400 500 600 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Shadows Into Light Two';
+  src: url('https://fonts.googleapis.com/css2?family=Shadows+Into+Light+Two&display=swap');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Sidebar CSS variables (shadcn/ui) ───────────────────────── */
+:root {
+  /* Levant VA Brand Palette */
+  --lva-navy: #0A192F;
+  --lva-gold: #C5A059;
+  --lva-green: #2DCE89;
+  --lva-bg: #111827;
+
+  --sidebar-background: #0A192F;
+  --sidebar-foreground: #c9d1d9;
+  --sidebar-primary: #C5A059;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(197, 160, 89, 0.08);
+  --sidebar-accent-foreground: #C5A059;
+  --sidebar-border: rgba(197, 160, 89, 0.12);
+  --sidebar-ring: #C5A059;
+  --background: #0A192F;
+  --foreground: #e8ecf0;
+
+  /* ACARS / MCDU color system */
+  --acars-green: #2DCE89;
+  --acars-amber: #FFB000;
+  --acars-cyan: #22D3EE;
+  --acars-white: #CCD6F6;
+  --acars-dim: #333d55;
+  --acars-screen: #0A192F;
+  --acars-border: #1d3461;
+}
+
+/* ── Glass card ──────────────────────────────────────────────── */
+.glass-card {
+  background: rgba(10, 25, 47, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ── Scrollbar ────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.12); }
+
+/* ── Pulse animation ─────────────────────────────────────────── */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+.animate-pulse-dot {
+  animation: pulse-dot 1.5s ease infinite;
+}
+
+/* ── Text gradient ───────────────────────────────────────────── */
+.text-gradient {
+  background: linear-gradient(135deg, #ffffff 0%, #C5A059 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── Professional Telemetry Scaling ─────────────────────────── */
+.telemetry-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--acars-white);
+  text-transform: uppercase;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+}
+
+.telemetry-value {
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--acars-green);
+  line-height: 1;
+  text-shadow: 0 0 8px rgba(45, 206, 137, 0.3);
+}
+
+.telemetry-unit {
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: #555;
+  text-transform: uppercase;
+}
+
+/* ── MCDU CRT Glow Effect ──────────────────────────────────── */
+.crt-glow {
+  position: relative;
+}
+.crt-glow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(ellipse at 50% 0%, rgba(45,206,137,0.03) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── ACARS Data Field (dashed-border MCDU row) ─────────────── */
+.acars-field {
+  border-bottom: 1px dashed var(--acars-dim);
+  padding: 6px 0;
+}
+
+/* ── Status Pills (phase indicators) ──────────────────────── */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border: 1px solid;
+}
+.status-pill.pill-active   { background: rgba(45,206,137,0.08);  border-color: rgba(45,206,137,0.25);  color: var(--acars-green); }
+.status-pill.pill-warning  { background: rgba(255,176,0,0.08); border-color: rgba(255,176,0,0.25); color: var(--acars-amber); }
+.status-pill.pill-danger   { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.25); color: #ef4444; }
+.status-pill.pill-info     { background: rgba(34,211,238,0.08); border-color: rgba(34,211,238,0.25); color: var(--acars-cyan); }
+.status-pill.pill-neutral  { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); color: #888; }
+
+/* ── Scratchpad (MCDU input line) ──────────────────────────── */
+.acars-scratchpad {
+  background: #000;
+  color: var(--acars-amber);
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border: 1px solid var(--acars-dim);
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.acars-scratchpad::placeholder { color: #333; }
+
+/* ── Telemetry Footer Bar ──────────────────────────────────── */
+.telemetry-bar {
+  background: var(--acars-screen);
+  border-top: 1px solid var(--acars-border);
+  font-family: 'JetBrains Mono', Consolas, monospace;
+}
+.telemetry-bar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  min-width: 80px;
+}
+.telemetry-bar-label {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #555;
+  text-transform: uppercase;
+}
+.telemetry-bar-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--acars-green);
+  text-shadow: 0 0 6px rgba(45,206,137,0.25);
+  line-height: 1;
+}
+
+/* ── Aceternity-style Glow ──────────────────────────────────── */
+.active-telemetry {
+  text-shadow: 0 0 15px rgba(45, 206, 137, 0.5);
+}
+
+.glow-gold {
+  text-shadow: 0 0 12px rgba(197, 160, 89, 0.4);
+}
+
+.glow-green {
+  text-shadow: 0 0 10px rgba(45, 206, 137, 0.35);
+}
+
+.glow-amber {
+  text-shadow: 0 0 10px rgba(255, 176, 0, 0.35);
+}
+
+.glow-cyan {
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.35);
+}
+
+/* ── Background Beams ───────────────────────────────────────── */
+.bg-beams {
+  position: relative;
+  overflow: hidden;
+}
+.bg-beams::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(197,160,89,0.03) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 50%, rgba(45,206,137,0.02) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* ── Moving border gradient ─────────────────────────────────── */
+.moving-border {
+  background: linear-gradient(90deg, transparent 0%, rgba(197,160,89,0.15) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Toast slide-in animation ────────────────────────────────── */
+@keyframes slide-in {
+  from { opacity: 0; transform: translateX(60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-in {
+  animation: slide-in 0.25s ease-out;
+}
+
+/* ── Pilot Badge (circular JPG crop) ─────────────────────────── */
+.pilot-badge-container {
+  width: 45px;
+  height: 45px;
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 2px solid rgba(197, 160, 89, 0.35);
+  box-shadow: 0 0 15px rgba(197, 160, 89, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0A192F;
+  flex-shrink: 0;
+}
+
+.pilot-badge-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.pilot-badge-container:hover .pilot-badge-img {
+  transform: scale(1.1);
+}
+
+/* ── Animated Gradient Border (rotating conic gradient) ─────── */
+@keyframes border-rotate {
+  0% { --angle: 0deg; }
+  100% { --angle: 360deg; }
+}
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+.animated-border {
+  position: relative;
+  overflow: hidden;
+}
+.animated-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--angle), transparent 60%, rgba(197,160,89,0.4), transparent 80%);
+  animation: border-rotate 4s linear infinite;
+  z-index: -1;
+}
+.animated-border::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background: var(--acars-screen);
+  z-index: -1;
+}
+
+/* ── Card Hover Glow (subtle lift + ambient glow) ────────────── */
+.card-hover-glow {
+  transition: transform 0.25s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+.card-hover-glow:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 24px rgba(197,160,89,0.06), 0 0 0 1px rgba(197,160,89,0.12);
+  border-color: rgba(197,160,89,0.2) !important;
+}
+
+/* ── Score Card Entrance ─────────────────────────────────────── */
+@keyframes score-reveal {
+  0% { opacity: 0; transform: translateY(12px) scale(0.97); filter: blur(4px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+.animate-score-reveal {
+  animation: score-reveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── CRT Scanline Overlay (subtle retro avionics feel) ───────── */
+.crt-scanlines {
+  position: relative;
+}
+.crt-scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
+  );
+  z-index: 1;
+}
+
+/* ── Breathing Status Dot ────────────────────────────────────── */
+@keyframes breathe {
+  0%, 100% { box-shadow: 0 0 4px currentColor; opacity: 0.7; }
+  50% { box-shadow: 0 0 12px currentColor, 0 0 20px currentColor; opacity: 1; }
+}
+.status-breathe {
+  animation: breathe 2s ease-in-out infinite;
+}
+
+/* ── Smooth Telemetry Value Transition ────────────────────────── */
+.telem-smooth {
+  transition: color 0.3s ease;
+  will-change: contents;
+}
+
+/* ── Flight Active Pulse Ring ────────────────────────────────── */
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.6; }
+  70% { transform: scale(1.8); opacity: 0; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+.pulse-ring {
+  position: relative;
+}
+.pulse-ring::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  animation: pulse-ring 2s ease-out infinite;
+}
+
+/* ── Frosted Glass Enhancement ───────────────────────────────── */
+.glass-frosted {
+  background: rgba(10, 25, 47, 0.6);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+/* ── Sidebar Ambient Glow ────────────────────────────────────── */
+@keyframes sidebar-ambient {
+  0%, 100% { opacity: 0.03; }
+  50% { opacity: 0.06; }
+}
+.sidebar-glow {
+  position: relative;
+  overflow: hidden;
+}
+.sidebar-glow::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 30% 20%, rgba(197,160,89,0.08) 0%, transparent 50%);
+  animation: sidebar-ambient 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ── Progress Bar Shimmer ────────────────────────────────────── */
+@keyframes progress-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.progress-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.08) 40%,
+    rgba(255,255,255,0.15) 50%,
+    rgba(255,255,255,0.08) 60%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: progress-shimmer 2s ease-in-out infinite;
+}
+
+/* ── Flight Info Bar Glow Border ─────────────────────────────── */
+.flight-bar-glow {
+  position: relative;
+}
+.flight-bar-glow::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(197,160,89,0.3), rgba(45,206,137,0.2), transparent);
+}
+
+/* ── Number Pop (brief scale on value change) ────────────────── */
+@keyframes num-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+.num-pop {
+  animation: num-pop 0.2s ease-out;
+}
+
+/* ── Device Code Character Stagger ───────────────────────────── */
+@keyframes char-appear {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.char-stagger > span {
+  display: inline-block;
+  animation: char-appear 0.4s ease-out backwards;
+}
+.char-stagger > span:nth-child(1) { animation-delay: 0.05s; }
+.char-stagger > span:nth-child(2) { animation-delay: 0.1s; }
+.char-stagger > span:nth-child(3) { animation-delay: 0.15s; }
+.char-stagger > span:nth-child(4) { animation-delay: 0.2s; }
+.char-stagger > span:nth-child(5) { animation-delay: 0.25s; }
+.char-stagger > span:nth-child(6) { animation-delay: 0.3s; }
+.char-stagger > span:nth-child(7) { animation-delay: 0.35s; }
+.char-stagger > span:nth-child(8) { animation-delay: 0.4s; }
+
+/* ── Leaflet popup override for dark theme ───────────────────── */
+.leaflet-popup-content-wrapper {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+}
+.leaflet-popup-content { margin: 0 !important; }
+.leaflet-popup-tip { background: #0f1318 !important; }

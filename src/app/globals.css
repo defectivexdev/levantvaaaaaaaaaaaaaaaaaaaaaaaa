@@ -1,0 +1,174 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 10 10 10;
+    --foreground: 255 255 255;
+    --primary: 14 165 233;
+    --accent-gold: 212 175 55;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-winky), var(--font-manrope), system-ui, sans-serif;
+    background: #0f0f0f;
+    color: white;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .glass-card {
+    background: #0a0a0a;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    transition: all 0.2s ease;
+  }
+
+  .glass-card:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .tactical-grid {
+    background-image: radial-gradient(
+      rgba(212, 175, 55, 0.1) 1px,
+      transparent 1px
+    );
+    background-size: 30px 30px;
+  }
+
+  .mesh-gradient {
+    background:
+      radial-gradient(at 0% 0%, rgba(212, 175, 55, 0.05) 0px, transparent 50%),
+      radial-gradient(
+        at 100% 100%,
+        rgba(205, 127, 50, 0.05) 0px,
+        transparent 50%
+      );
+  }
+
+  .btn-primary {
+    background: #D4AF37;
+    color: #0a0a0a;
+    font-weight: 700;
+    padding: 10px 24px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-primary:hover {
+    background: #c9a432;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 700;
+    padding: 10px 24px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: white;
+  }
+
+  .divider {
+    width: 48px;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(212, 175, 55, 0.4), transparent);
+    margin: 12px auto;
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #d4af37 0%, #cd7f32 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glow {
+    box-shadow: 0 0 24px rgba(212, 175, 55, 0.08);
+  }
+}
+
+@layer utilities {
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-fly-across {
+    animation: flyAcross 20s linear infinite;
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes flyAcross {
+    0% {
+      transform: translateX(-100vw) translateY(50px) rotate(-5deg);
+      opacity: 0;
+    }
+
+    10% {
+      opacity: 1;
+    }
+
+    90% {
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateX(100vw) translateY(-50px) rotate(5deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes border-beam {
+    100% {
+      offset-distance: 100%;
+    }
+  }
+
+  .animate-border-beam {
+    animation: border-beam var(--duration, 15s) infinite linear;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}

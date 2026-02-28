@@ -1,0 +1,33 @@
+## .NET / Visual Studio
+bin/
+obj/
+publish/
+*.user
+*.suo
+*.cache
+*.vs/
+.vs/
+*.DotSettings.user
+
+## Build outputs
+dist/
+dist-build/
+Releases/
+
+## React UI
+react-ui/node_modules/
+react-ui/dist/
+
+## Logs
+logs/
+*.log
+
+## IDE
+.idea/
+*.swp
+*~
+
+## OS
+Thumbs.db
+.DS_Store
+desktop.ini

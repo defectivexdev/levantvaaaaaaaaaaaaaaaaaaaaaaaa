@@ -1,0 +1,379 @@
+<UserControl x:Class="LevantACARS.Views.FlightView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+
+    <Grid>
+        <!-- ═══ DISPATCH FORM (no active flight) ═════════════════════════ -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <ScrollViewer.Style>
+                <Style TargetType="ScrollViewer">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsFlightActive}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ScrollViewer.Style>
+
+            <Grid Margin="24,20,24,24" MaxWidth="720" HorizontalAlignment="Left">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <StackPanel Grid.Row="0" Margin="4,0,0,20">
+                    <TextBlock Text="Flight Dispatch" Style="{StaticResource HeadingStyle}" />
+                    <TextBlock Text="Configure your flight plan or load from an active booking"
+                               FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0" />
+                </StackPanel>
+
+                <!-- ── Score Card (post-flight result) ──────────────────── -->
+                <Border Grid.Row="1" Style="{StaticResource InstrumentCard}" Padding="24,20" Margin="0,0,0,16"
+                        Visibility="{Binding ShowScoreCard, Converter={StaticResource BoolToVisibility}}">
+                    <StackPanel>
+                        <TextBlock Text="FLIGHT REPORT" Style="{StaticResource LabelStyle}" Margin="0,0,0,16" />
+                        <UniformGrid Rows="1" Margin="0,0,0,12">
+                            <Border Style="{StaticResource InstrumentCard}" Background="{StaticResource SurfaceElevatedBrush}">
+                                <StackPanel>
+                                    <TextBlock Text="SCORE" Style="{StaticResource LabelStyle}" Margin="0,0,0,4" />
+                                    <TextBlock Text="{Binding FinalScore, StringFormat='{}{0}%'}"
+                                               FontSize="24" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas"
+                                               Foreground="{StaticResource AccentBrush}" />
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource InstrumentCard}" Background="{StaticResource SurfaceElevatedBrush}">
+                                <StackPanel>
+                                    <TextBlock Text="LANDING" Style="{StaticResource LabelStyle}" Margin="0,0,0,4" />
+                                    <TextBlock Text="{Binding LandingGrade}"
+                                               FontSize="24" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas"
+                                               Foreground="{StaticResource AccentGoldBrush}" />
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource InstrumentCard}" Background="{StaticResource SurfaceElevatedBrush}">
+                                <StackPanel>
+                                    <TextBlock Text="XP EARNED" Style="{StaticResource LabelStyle}" Margin="0,0,0,4" />
+                                    <TextBlock Text="{Binding XpEarned, StringFormat='+{0}'}"
+                                               FontSize="24" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas"
+                                               Foreground="{StaticResource SuccessBrush}" />
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
+                        <TextBlock Text="{Binding LandingDescription}" FontSize="12"
+                                   Foreground="{StaticResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding RejectionReason}" FontSize="12" Margin="0,4,0,0"
+                                   Foreground="{StaticResource DangerBrush}" FontWeight="SemiBold"
+                                   Visibility="{Binding FlightRejected, Converter={StaticResource BoolToVisibility}}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- ── Dispatch Form ────────────────────────────────────── -->
+                <Border Grid.Row="2" Style="{StaticResource InstrumentCard}" Padding="28,24">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Row 0: Pilot ID / Flight Number -->
+                        <TextBox Grid.Row="0" Grid.Column="0" Margin="0,0,0,8"
+                            materialDesign:HintAssist.Hint="Pilot ID"
+                            materialDesign:HintAssist.IsFloating="True"
+                            materialDesign:TextFieldAssist.HasClearButton="True"
+                            Text="{Binding PilotId, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                        <TextBox Grid.Row="0" Grid.Column="2" Margin="0,0,0,8"
+                            materialDesign:HintAssist.Hint="Flight Number"
+                            materialDesign:HintAssist.IsFloating="True"
+                            Text="{Binding FlightNumber, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <!-- Row 1: Callsign / Aircraft Type -->
+                        <TextBox Grid.Row="1" Grid.Column="0" Margin="0,0,0,8"
+                            materialDesign:HintAssist.Hint="Callsign"
+                            materialDesign:HintAssist.IsFloating="True"
+                            Text="{Binding Callsign, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                        <TextBox Grid.Row="1" Grid.Column="2" Margin="0,0,0,8"
+                            materialDesign:HintAssist.Hint="Aircraft Type"
+                            materialDesign:HintAssist.IsFloating="True"
+                            Text="{Binding AircraftType, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <!-- Row 2: DEP / ARR ICAO -->
+                        <TextBox Grid.Row="2" Grid.Column="0" Margin="0,0,0,8"
+                            materialDesign:HintAssist.Hint="Departure ICAO"
+                            materialDesign:HintAssist.IsFloating="True" CharacterCasing="Upper"
+                            Text="{Binding DepartureIcao, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                        <TextBox Grid.Row="2" Grid.Column="2" Margin="0,0,0,8"
+                            materialDesign:HintAssist.Hint="Arrival ICAO"
+                            materialDesign:HintAssist.IsFloating="True" CharacterCasing="Upper"
+                            Text="{Binding ArrivalIcao, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <!-- Row 3: Route -->
+                        <TextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,8"
+                            materialDesign:HintAssist.Hint="Route"
+                            materialDesign:HintAssist.IsFloating="True"
+                            Text="{Binding Route, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <!-- Row 4: Registration / PAX / Cargo -->
+                        <TextBox Grid.Row="4" Grid.Column="0" Margin="0,0,0,8"
+                            materialDesign:HintAssist.Hint="Registration"
+                            materialDesign:HintAssist.IsFloating="True" CharacterCasing="Upper"
+                            Text="{Binding AircraftRegistration, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                        <Grid Grid.Row="4" Grid.Column="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Margin="0,0,0,8"
+                                materialDesign:HintAssist.Hint="PAX"
+                                materialDesign:HintAssist.IsFloating="True"
+                                Text="{Binding Pax, UpdateSourceTrigger=PropertyChanged}"
+                                Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                            <TextBox Grid.Column="2" Margin="0,0,0,8"
+                                materialDesign:HintAssist.Hint="Cargo (kg)"
+                                materialDesign:HintAssist.IsFloating="True"
+                                Text="{Binding Cargo, UpdateSourceTrigger=PropertyChanged}"
+                                Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                        </Grid>
+
+                        <!-- Row 5: Start Button -->
+                        <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,16,0,0"
+                            Command="{Binding StartFlightCommand}"
+                            HorizontalAlignment="Stretch" Height="48" Cursor="Hand"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            materialDesign:ButtonAssist.CornerRadius="10"
+                            Background="{StaticResource AccentGradient}"
+                            BorderBrush="Transparent" FontSize="15" FontWeight="Bold" Foreground="White">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="AirplaneTakeoff" Width="20" Height="20"
+                                    VerticalAlignment="Center" Margin="0,0,10,0" />
+                                <TextBlock Text="START FLIGHT" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
+        </ScrollViewer>
+
+        <!-- ═══ LIVE FLIGHT PANEL (active flight) ════════════════════════ -->
+        <Grid Visibility="{Binding IsFlightActive, Converter={StaticResource BoolToVisibility}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- ── Flight Info Bar ──────────────────────────────────────── -->
+            <Border Grid.Row="0" Background="{StaticResource SurfaceCardBrush}" Padding="24,14">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontSize="17" FontWeight="Bold" Foreground="{StaticResource AccentBrush}"
+                                       Text="{Binding FlightNumber, Mode=OneWay}" />
+                            <TextBlock FontSize="17" Foreground="{StaticResource TextSecondaryBrush}" Margin="12,0,0,0">
+                                <Run Text="{Binding DepartureIcao, Mode=OneWay}" />
+                                <Run Text="  →  " Foreground="{StaticResource TextDisabledBrush}" />
+                                <Run Text="{Binding ArrivalIcao, Mode=OneWay}" />
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                            <Border CornerRadius="6" Padding="10,4" Margin="0,0,8,0"
+                                    Background="{StaticResource SurfaceElevatedBrush}">
+                                <TextBlock Text="{Binding CurrentPhase}" FontSize="10" FontWeight="Bold"
+                                           Foreground="{StaticResource AccentBrush}" />
+                            </Border>
+                            <Border CornerRadius="6" Padding="10,4"
+                                    Background="{StaticResource SurfaceElevatedBrush}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Clock" Width="12" Height="12"
+                                        Foreground="{StaticResource AccentGoldBrush}" VerticalAlignment="Center" Margin="0,0,4,0" />
+                                    <TextBlock Text="{Binding FlightTime, Mode=OneWay}" FontSize="10" FontWeight="Bold"
+                                               Foreground="{StaticResource AccentGoldBrush}" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Button Grid.Column="1" VerticalAlignment="Center" Cursor="Hand"
+                        Command="{Binding SubmitFlightCommand}"
+                        Style="{StaticResource MaterialDesignRaisedButton}"
+                        materialDesign:ButtonAssist.CornerRadius="8"
+                        Background="{StaticResource DangerBrush}" BorderBrush="Transparent"
+                        FontWeight="Bold" FontSize="12" Foreground="White" Height="36">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="AirplaneLanding" Width="16" Height="16"
+                                VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <TextBlock Text="END FLIGHT" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- ── Main Content ─────────────────────────────────────────── -->
+            <Grid Grid.Row="1" Margin="16,12,16,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="280" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Left: Telemetry + Log -->
+                <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="0,0,8,0">
+                    <StackPanel>
+                        <!-- Telemetry Grid -->
+                        <UniformGrid Rows="1" Margin="0,0,0,8">
+                            <Border Style="{StaticResource InstrumentCard}">
+                                <StackPanel>
+                                    <TextBlock Text="ALT" Style="{StaticResource LabelStyle}" Margin="0,0,0,4" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Altitude, StringFormat='{}{0:N0}'}"
+                                                   FontSize="22" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas"
+                                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                                        <TextBlock Text="ft" Style="{StaticResource UnitStyle}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource InstrumentCard}">
+                                <StackPanel>
+                                    <TextBlock Text="GS" Style="{StaticResource LabelStyle}" Margin="0,0,0,4" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding GroundSpeed}"
+                                                   FontSize="22" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas"
+                                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                                        <TextBlock Text="kts" Style="{StaticResource UnitStyle}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource InstrumentCard}">
+                                <StackPanel>
+                                    <TextBlock Text="V/S" Style="{StaticResource LabelStyle}" Margin="0,0,0,4" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding VerticalSpeed, StringFormat='{}{0:+#;-#;0}'}"
+                                                   FontSize="22" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas"
+                                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                                        <TextBlock Text="fpm" Style="{StaticResource UnitStyle}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource InstrumentCard}">
+                                <StackPanel>
+                                    <TextBlock Text="HDG" Style="{StaticResource LabelStyle}" Margin="0,0,0,4" />
+                                    <TextBlock Text="{Binding Heading, StringFormat='{}{0:000}°'}"
+                                               FontSize="22" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas"
+                                               Foreground="{StaticResource TextPrimaryBrush}" />
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
+
+                        <!-- Secondary Row -->
+                        <UniformGrid Rows="1" Margin="0,0,0,8">
+                            <Border Style="{StaticResource InstrumentCard}">
+                                <StackPanel>
+                                    <TextBlock Text="IAS" Style="{StaticResource LabelStyle}" Margin="0,0,0,4" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Ias}"
+                                                   FontSize="22" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas"
+                                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                                        <TextBlock Text="kts" Style="{StaticResource UnitStyle}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource InstrumentCard}">
+                                <StackPanel>
+                                    <TextBlock Text="G-FORCE" Style="{StaticResource LabelStyle}" Margin="0,0,0,4" />
+                                    <TextBlock Text="{Binding GForce, StringFormat='{}{0:F2} G'}"
+                                               FontSize="22" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas"
+                                               Foreground="{StaticResource TextPrimaryBrush}" />
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource InstrumentCard}">
+                                <StackPanel>
+                                    <TextBlock Text="COMFORT" Style="{StaticResource LabelStyle}" Margin="0,0,0,4" />
+                                    <TextBlock Text="{Binding ComfortScore, StringFormat='{}{0}%'}"
+                                               FontSize="22" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas"
+                                               Foreground="{StaticResource SuccessBrush}" />
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource InstrumentCard}">
+                                <StackPanel>
+                                    <TextBlock Text="VIOLATIONS" Style="{StaticResource LabelStyle}" Margin="0,0,0,4" />
+                                    <TextBlock Text="{Binding ExceedanceCount}"
+                                               FontSize="22" FontWeight="Bold" FontFamily="Cascadia Mono, Consolas"
+                                               Foreground="{StaticResource WarningBrush}" />
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
+
+                        <!-- Activity Log -->
+                        <Border Style="{StaticResource InstrumentCard}" Margin="4,4,4,0" Padding="16,14">
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Top" Text="ACTIVITY LOG" Style="{StaticResource LabelStyle}" Margin="0,0,0,8" />
+                                <ListBox ItemsSource="{Binding ActivityLog}" Style="{StaticResource DarkListBoxStyle}" Height="180" />
+                            </DockPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Right: Exceedance Log -->
+                <Border Grid.Column="1" Style="{StaticResource InstrumentCard}" Margin="4,4,0,4" Padding="16,14">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
+                            <materialDesign:PackIcon Kind="ShieldAlert" Width="16" Height="16"
+                                Foreground="{StaticResource WarningBrush}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <TextBlock Text="EXCEEDANCES" Style="{StaticResource LabelStyle}" Margin="0"
+                                       Foreground="{StaticResource WarningBrush}" />
+                        </StackPanel>
+                        <ListBox ItemsSource="{Binding ExceedanceLog}" Style="{StaticResource DarkListBoxStyle}" />
+                    </DockPanel>
+                </Border>
+            </Grid>
+
+            <!-- ── Bottom Bar ───────────────────────────────────────────── -->
+            <Border Grid.Row="2" Padding="20,8" Background="{StaticResource SurfaceDarkBrush}">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
+                        <materialDesign:PackIcon Kind="MapMarker" Width="13" Height="13"
+                            Foreground="{StaticResource TextDisabledBrush}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                        <TextBlock FontSize="10" FontFamily="Cascadia Mono, Consolas"
+                                   Foreground="{StaticResource TextDisabledBrush}" VerticalAlignment="Center">
+                            <Run Text="{Binding Latitude, StringFormat='{}{0:F4}', Mode=OneWay}" />
+                            <Run Text="  " />
+                            <Run Text="{Binding Longitude, StringFormat='{}{0:F4}', Mode=OneWay}" />
+                        </TextBlock>
+                    </StackPanel>
+                    <Button DockPanel.Dock="Right" Command="{Binding CancelFlightCommand}" Cursor="Hand"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="{StaticResource DangerBrush}" FontSize="11" Padding="8,4">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Cancel" Width="14" Height="14"
+                                VerticalAlignment="Center" Margin="0,0,4,0" />
+                            <TextBlock Text="Cancel Flight" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

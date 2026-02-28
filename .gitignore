@@ -1,0 +1,50 @@
+# dependencies
+node_modules/
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+dist-build/
+acars-app/dist-build/
+acars-app/dist/
+acars-app/dist-electron/
+
+# electron-builder output
+acars-app/release/
+
+# typescript
+*.tsbuildinfo
+
+# misc
+.DS_Store
+*.pem
+Thumbs.db
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+ts-debug.log*
+
+# local env files
+.env*.local
+.env
+acars-app/.env
+
+# .NET build output
+LevantACARS/publish/
+LevantACARS/LevantACARS/bin/
+LevantACARS/LevantACARS/obj/
+Releases/
+
+Publish/
+
+# Never store binary .ico in git (generated at build time)
+*.ico
+

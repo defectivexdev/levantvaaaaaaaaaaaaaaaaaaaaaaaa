@@ -1,0 +1,92 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>LevantACARS</AssemblyName>
+    <RootNamespace>LevantACARS</RootNamespace>
+    <ApplicationIcon>Assets\favicon.ico</ApplicationIcon>
+    <StartupObject>LevantACARS.Program</StartupObject>
+
+    <Version>3.3.33</Version>
+    <Authors>Levant Virtual Airlines</Authors>
+    <Description>Levant VA ACARS Client — Flight Tracking &amp; PIREP Submission</Description>
+
+    <!-- Publish configuration -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>false</PublishSingleFile>
+    <PublishTrimmed>false</PublishTrimmed>
+    <PublishReadyToRun>false</PublishReadyToRun>
+
+    <!-- Strip debug symbols from release -->
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <!-- NuGet Packages -->
+  <ItemGroup>
+    <!-- MVVM -->
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+
+    <!-- Material Design UI -->
+    <PackageReference Include="MaterialDesignThemes" Version="5.1.0" />
+    <PackageReference Include="MaterialDesignColors" Version="3.1.0" />
+
+    <!-- Dependency Injection -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.1" />
+
+    <!-- HTTP resilience (Polly-based retry) -->
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.0.0" />
+
+    <!-- JSON -->
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+
+    <!-- WebView2 -->
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
+
+    <!-- FSUIPC -->
+    <PackageReference Include="FSUIPCClientDLL" Version="3.3.16" />
+
+    <!-- Velopack (auto-update) -->
+    <PackageReference Include="Velopack" Version="0.0.626" />
+
+    <!-- Discord Rich Presence -->
+    <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
+
+    <!-- Serilog for structured logging -->
+    <PackageReference Include="Serilog" Version="4.0.2" />
+    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+  </ItemGroup>
+
+  <!-- Assets copied to output -->
+  <ItemGroup>
+    <Resource Include="Assets\**" />
+    <None Update="Assets\favicon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\favicon.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\logo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <!-- React dist (wwwroot) copied to output via post-build robocopy -->
+  <Target Name="CopyWwwroot" AfterTargets="Build">
+    <Exec Command="robocopy &quot;$(ProjectDir)wwwroot&quot; &quot;$(OutputPath)wwwroot&quot; /E /NFL /NDL /NJH /NJS /NP" IgnoreExitCode="true" />
+  </Target>
+  <Target Name="CopyWwwrootPublish" AfterTargets="Publish">
+    <Exec Command="robocopy &quot;$(ProjectDir)wwwroot&quot; &quot;$(PublishDir)wwwroot&quot; /E /NFL /NDL /NJH /NJS /NP" IgnoreExitCode="true" />
+  </Target>
+
+</Project>

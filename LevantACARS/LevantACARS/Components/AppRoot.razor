@@ -1,0 +1,104 @@
+@inject MainViewModel VM
+
+@if (!VM.IsLoggedIn)
+{
+    <!-- ═══ LINK SCREEN ═══════════════════════════════════════════════ -->
+    <div class="link-screen">
+        <img src="logo.png" alt="Levant VA" class="link-logo" />
+
+        <div class="link-title">Flight Tracking</div>
+
+        @if (!string.IsNullOrEmpty(VM.DeviceCode))
+        {
+            <div class="link-code-box">
+                <span class="link-code">@VM.DeviceCode</span>
+            </div>
+
+            <div class="link-hint">
+                Go to <strong>levant-va.com</strong> and enter this code<br />
+                to link your account
+            </div>
+
+            <div class="link-spinner">
+                <span class="dot"></span>
+                Waiting for authorization...
+            </div>
+        }
+        else
+        {
+            <div class="link-spinner">
+                <span class="dot"></span>
+                Connecting...
+            </div>
+        }
+
+        <div class="link-status-row">
+            <div class="status-pill">
+                <span class="status-dot @(VM.IsSimConnected ? "connected" : "disconnected")"></span>
+                <span style="color: @(VM.IsSimConnected ? "var(--success)" : "var(--danger)")">SIM</span>
+            </div>
+            <div class="status-pill">
+                <span class="status-dot @(VM.IsApiConnected ? "connected" : "disconnected")"></span>
+                <span style="color: @(VM.IsApiConnected ? "var(--success)" : "var(--danger)")">API</span>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <!-- ═══ MAIN APP ═══════════════════════════════════════════════════ -->
+    <div class="app-shell">
+        <header class="header-bar">
+            <div class="header-brand">
+                <img src="logo.png" alt="Levant VA" />
+            </div>
+
+            <div class="header-badge text-gold">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                @VM.PilotRank
+            </div>
+            <div class="header-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--text-secondary)"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+                @VM.PilotHours.ToString("F1")h
+            </div>
+
+            <div class="header-spacer"></div>
+
+            <div class="header-status-group">
+                <div class="status-pill">
+                    <span class="status-dot @(VM.IsSimConnected ? "connected" : "disconnected")"></span>
+                    <span style="color: @(VM.IsSimConnected ? "var(--success)" : "var(--danger)")">SIM</span>
+                </div>
+                <div class="status-pill">
+                    <span class="status-dot @(VM.IsApiConnected ? "connected" : "disconnected")"></span>
+                    <span style="color: @(VM.IsApiConnected ? "var(--success)" : "var(--danger)")">API</span>
+                </div>
+            </div>
+
+            <div class="header-pilot">
+                <div class="pilot-avatar">@(string.IsNullOrEmpty(VM.PilotName) ? "?" : VM.PilotName[..1].ToUpper())</div>
+                <div>
+                    <div class="pilot-name">@VM.PilotName</div>
+                    <div class="pilot-rank">@VM.PilotId</div>
+                </div>
+            </div>
+
+            <button class="logout-btn" @onclick="OnLogout" title="Sign Out">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+            </button>
+        </header>
+
+        <main class="content-area">
+            <Dashboard />
+        </main>
+    </div>
+}
+
+@code {
+    protected override void OnInitialized()
+    {
+        VM.PropertyChanged += async (_, _) => await InvokeAsync(StateHasChanged);
+    }
+
+    private void OnLogout() => VM.LogoutCommand.Execute(null);
+}

@@ -1,0 +1,128 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         Levant VA — "Midnight Aviation" Dark Theme
+         Modeled after CX Virtual ACARS / high-end flight trackers
+         8px grid · No hard borders · Elevation via color
+         ══════════════════════════════════════════════════════════════════ -->
+
+    <!-- Surface Elevation Hierarchy (darkest → lightest) -->
+    <Color x:Key="SurfaceDark">#0B0E11</Color>          <!-- Primary BG -->
+    <Color x:Key="SurfaceBase">#10141A</Color>           <!-- Content area -->
+    <Color x:Key="SurfaceCard">#15191C</Color>           <!-- Cards -->
+    <Color x:Key="SurfaceElevated">#1F2327</Color>       <!-- Elevated panels -->
+    <Color x:Key="SurfaceHighlight">#252A30</Color>      <!-- Hover / active -->
+    <Color x:Key="SurfaceOverlay">#1A1E24</Color>        <!-- Modals / overlays -->
+
+    <!-- Levant Blue — Primary Accent -->
+    <Color x:Key="AccentColor">#00A3FF</Color>
+    <Color x:Key="AccentDarkColor">#0077CC</Color>
+    <Color x:Key="AccentLightColor">#33B5FF</Color>
+    <Color x:Key="AccentMutedColor">#00A3FF</Color>
+
+    <!-- Gold — Secondary Accent (rank, XP) -->
+    <Color x:Key="AccentGoldColor">#F0B040</Color>
+    <Color x:Key="AccentGoldDarkColor">#D4920B</Color>
+
+    <!-- Semantic Status -->
+    <Color x:Key="SuccessColor">#00D26A</Color>
+    <Color x:Key="WarningColor">#FFB020</Color>
+    <Color x:Key="DangerColor">#FF4757</Color>
+    <Color x:Key="InfoColor">#00A3FF</Color>
+
+    <!-- Text Hierarchy -->
+    <Color x:Key="TextPrimaryColor">#E8ECF0</Color>
+    <Color x:Key="TextSecondaryColor">#7D8590</Color>
+    <Color x:Key="TextDisabledColor">#484F58</Color>
+    <Color x:Key="TextMutedColor">#3B424A</Color>
+
+    <!-- Borders — subtle only, no hard lines -->
+    <Color x:Key="BorderSubtleColor">#1E2228</Color>
+    <Color x:Key="BorderStrongColor">#2A3038</Color>
+
+    <!-- ── Solid Brushes ──────────────────────────────────────────────── -->
+    <SolidColorBrush x:Key="SurfaceDarkBrush" Color="{StaticResource SurfaceDark}" />
+    <SolidColorBrush x:Key="SurfaceBaseBrush" Color="{StaticResource SurfaceBase}" />
+    <SolidColorBrush x:Key="SurfaceCardBrush" Color="{StaticResource SurfaceCard}" />
+    <SolidColorBrush x:Key="SurfaceElevatedBrush" Color="{StaticResource SurfaceElevated}" />
+    <SolidColorBrush x:Key="SurfaceHighlightBrush" Color="{StaticResource SurfaceHighlight}" />
+    <SolidColorBrush x:Key="SurfaceOverlayBrush" Color="{StaticResource SurfaceOverlay}" />
+
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+    <SolidColorBrush x:Key="AccentDarkBrush" Color="{StaticResource AccentDarkColor}" />
+    <SolidColorBrush x:Key="AccentLightBrush" Color="{StaticResource AccentLightColor}" />
+    <SolidColorBrush x:Key="AccentGoldBrush" Color="{StaticResource AccentGoldColor}" />
+    <SolidColorBrush x:Key="AccentGoldDarkBrush" Color="{StaticResource AccentGoldDarkColor}" />
+
+    <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}" />
+    <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource WarningColor}" />
+    <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />
+    <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource InfoColor}" />
+
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}" />
+    <SolidColorBrush x:Key="TextDisabledBrush" Color="{StaticResource TextDisabledColor}" />
+    <SolidColorBrush x:Key="TextMutedBrush" Color="{StaticResource TextMutedColor}" />
+
+    <SolidColorBrush x:Key="BorderSubtleBrush" Color="{StaticResource BorderSubtleColor}" />
+    <SolidColorBrush x:Key="BorderStrongBrush" Color="{StaticResource BorderStrongColor}" />
+
+    <!-- ── Gradients ──────────────────────────────────────────────────── -->
+
+    <!-- Primary action gradient (buttons) -->
+    <LinearGradientBrush x:Key="AccentGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#00A3FF" Offset="0" />
+        <GradientStop Color="#0077CC" Offset="1" />
+    </LinearGradientBrush>
+
+    <!-- Nav rail background -->
+    <LinearGradientBrush x:Key="SidebarGradient" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#0B0E11" Offset="0" />
+        <GradientStop Color="#0F1318" Offset="1" />
+    </LinearGradientBrush>
+
+    <!-- Header bar subtle gradient -->
+    <LinearGradientBrush x:Key="HeaderGradient" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#0B0E11" Offset="0" />
+        <GradientStop Color="#12171D" Offset="0.5" />
+        <GradientStop Color="#0B0E11" Offset="1" />
+    </LinearGradientBrush>
+
+    <!-- Flight progress bar -->
+    <LinearGradientBrush x:Key="ProgressGradient" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#00A3FF" Offset="0" />
+        <GradientStop Color="#33B5FF" Offset="1" />
+    </LinearGradientBrush>
+
+    <!-- Glassmorphism overlays -->
+    <SolidColorBrush x:Key="GlassCardBrush" Color="#15191C" Opacity="0.92" />
+    <SolidColorBrush x:Key="GlassOverlayBrush" Color="#0B0E11" Opacity="0.7" />
+
+    <!-- Glow accents for indicators -->
+    <LinearGradientBrush x:Key="AccentGlowGradient" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#00A3FF" Offset="0" />
+        <GradientStop Color="#0077CC" Offset="0.5" />
+        <GradientStop Color="Transparent" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="GoldGlowGradient" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#F0B040" Offset="0" />
+        <GradientStop Color="#D4920B" Offset="0.5" />
+        <GradientStop Color="Transparent" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="SuccessGlowGradient" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#00D26A" Offset="0" />
+        <GradientStop Color="#00A854" Offset="0.5" />
+        <GradientStop Color="Transparent" Offset="1" />
+    </LinearGradientBrush>
+
+    <!-- Legacy aliases -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource SurfaceDark}" />
+    <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource SurfaceBase}" />
+    <SolidColorBrush x:Key="CardBrush" Color="{StaticResource SurfaceCard}" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceBase}" />
+    <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderSubtleColor}" />
+
+</ResourceDictionary>
