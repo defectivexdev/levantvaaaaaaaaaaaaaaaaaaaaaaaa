@@ -38,6 +38,16 @@ jobs:
     - name: Restore NuGet packages
       run: nuget restore LevantACARS/LevantACARS.sln
 
+    - name: Copy favicon.ico from React UI
+      shell: pwsh
+      run: |
+        $source = "LevantACARS/react-ui/public/img/favicon.ico"
+        $dest = "LevantACARS/LevantACARS/Assets/favicon.ico"
+        if (-not (Test-Path $source)) { throw "favicon.ico not found at $source" }
+        New-Item -ItemType Directory -Force -Path (Split-Path $dest) | Out-Null
+        Copy-Item $source $dest -Force
+        Write-Host "Copied favicon.ico from React UI to Assets folder"
+
     - name: Build ACARS Client
       run: msbuild LevantACARS/LevantACARS.sln /p:Configuration=Release /p:Platform="Any CPU"
 
@@ -79,15 +89,6 @@ jobs:
         $configJson = $config | ConvertTo-Json -Depth 10
         $configJson | Set-Content "LevantACARS/LevantACARS/config.default.json"
         Write-Host "Created config.default.json with production settings"
-
-    - name: Copy favicon.ico from React UI
-      shell: pwsh
-      run: |
-        $source = "LevantACARS/react-ui/public/img/favicon.ico"
-        $dest = "LevantACARS/LevantACARS/Assets/favicon.ico"
-        if (-not (Test-Path $source)) { throw "favicon.ico not found at $source" }
-        Copy-Item $source $dest -Force
-        Write-Host "Copied favicon.ico from React UI to Assets folder"
 
     - name: Build MSI Installer
       run: |
