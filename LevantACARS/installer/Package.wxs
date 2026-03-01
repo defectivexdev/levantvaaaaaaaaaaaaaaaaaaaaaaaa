@@ -34,22 +34,10 @@
 
     <!-- Main feature -->
     <Feature Id="Main" Title="Levant ACARS" Level="1">
-      <ComponentGroupRef Id="AppFiles" />
-      <ComponentGroupRef Id="ReactFiles" />
+      <ComponentGroupRef Id="HarvestedFiles" />
       <ComponentRef Id="DesktopShortcut" />
       <ComponentRef Id="StartMenuShortcut" />
     </Feature>
-
-    <!-- App binaries harvested from publish output -->
-    <ComponentGroup Id="AppFiles" Directory="INSTALLDIR">
-      <Files Include="publish\**"
-             Exclude="publish\wwwroot\**" />
-    </ComponentGroup>
-
-    <!-- React dist (wwwroot) -->
-    <ComponentGroup Id="ReactFiles" Directory="INSTALLDIR">
-      <Files Include="publish\wwwroot\**" />
-    </ComponentGroup>
 
     <!-- Desktop Shortcut -->
     <Component Id="DesktopShortcut" Directory="DesktopFolder" Guid="C1A2B3D4-E5F6-7890-ABCD-EF1234567890">

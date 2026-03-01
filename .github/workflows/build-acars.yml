@@ -44,16 +44,24 @@ jobs:
         choco install wixtoolset -y
         echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
+    - name: Publish ACARS Client
+      run: dotnet publish LevantACARS/LevantACARS/LevantACARS.csproj -c Release -r win-x64 --self-contained -o LevantACARS/installer/publish
+
     - name: Build MSI Installer
       run: |
         $version = "${{ steps.version.outputs.VERSION }}"
         cd LevantACARS/installer
         
-        # Build MSI without modifying Package.wxs (version is already set to 1.2.1)
-        candle.exe -ext WixUIExtension -ext WixUtilExtension Package.wxs -o Package.wixobj
+        # Harvest published files using Heat.exe
+        heat.exe dir publish -cg HarvestedFiles -gg -sfrag -srd -dr INSTALLDIR -var var.PublishDir -out HarvestedFiles.wxs
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         
-        light.exe -ext WixUIExtension -ext WixUtilExtension Package.wixobj -o "LevantACARS-Setup-v$version.msi"
+        # Compile WiX sources
+        candle.exe -ext WixUIExtension -ext WixUtilExtension -dPublishDir=publish Package.wxs HarvestedFiles.wxs -o obj\
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        
+        # Link into MSI
+        light.exe -ext WixUIExtension -ext WixUtilExtension obj\Package.wixobj obj\HarvestedFiles.wixobj -o "LevantACARS-Setup-v$version.msi"
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
     - name: Upload MSI Artifact
