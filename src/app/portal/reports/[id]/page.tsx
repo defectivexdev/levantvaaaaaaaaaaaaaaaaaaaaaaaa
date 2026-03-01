@@ -53,8 +53,9 @@ export default function PirepDetailPage() {
     if (!rpt) return <div className="p-8 text-center text-gray-400">Report not found</div>;
 
     const formatDuration = (minutes: number) => {
-        const hrs = Math.floor(minutes / 60);
-        const mins = minutes % 60;
+        const totalMins = Math.round(minutes);
+        const hrs = Math.floor(totalMins / 60);
+        const mins = totalMins % 60;
         return `${hrs}h ${mins}m`;
     };
 

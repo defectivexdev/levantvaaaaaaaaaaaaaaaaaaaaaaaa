@@ -90,8 +90,9 @@ export default function ReportsPage() {
 
     const formatDuration = (minutes: number) => {
         if (!minutes) return '-';
-        const hrs = Math.floor(minutes / 60);
-        const mins = minutes % 60;
+        const totalMins = Math.round(minutes);
+        const hrs = Math.floor(totalMins / 60);
+        const mins = totalMins % 60;
         return `${hrs}:${String(mins).padStart(2, '0')}`;
     };
 

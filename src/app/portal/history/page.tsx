@@ -104,8 +104,9 @@ export default function HistoryPage() {
     };
 
     const formatDuration = (minutes: number) => {
-        const h = Math.floor(minutes / 60);
-        const m = minutes % 60;
+        const totalMins = Math.round(minutes);
+        const h = Math.floor(totalMins / 60);
+        const m = totalMins % 60;
         return `${h}h ${m}m`;
     };
 
