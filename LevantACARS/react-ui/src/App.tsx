@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Minus, Square, X, LayoutDashboard, Globe, MessageCircle, MessageSquare, LogOut, Radio, RefreshCw } from 'lucide-react';
+import { Minus, Square, X, LayoutDashboard, Globe, MessageCircle, MessageSquare, LogOut, Radio } from 'lucide-react';
 import { useTelemetry } from './hooks/useTelemetry';
 import { SimBridge } from './bridge';
 import LinkScreen from './components/LinkScreen';
@@ -86,10 +86,6 @@ export default function App() {
             <SideNavItem active={activeView === 'logs'} onClick={() => setActiveView('logs')} icon={<MessageSquare size={16} />} label="Flight Logs" />
           </nav>
           <div className="border-t border-[#1d3461] flex flex-col gap-0.5 px-2.5 py-2">
-            <button onClick={() => SimBridge.checkForUpdate()} className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-[#8892b0] hover:text-cyan-400 hover:bg-cyan-500/[0.06] transition-all bg-transparent border-none cursor-pointer text-[10px] font-mono tracking-wider">
-              <RefreshCw size={12} />
-              Check for Update
-            </button>
             <button onClick={() => SimBridge.logout()} className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-[#555] hover:text-rose-400 hover:bg-rose-500/[0.06] transition-all bg-transparent border-none cursor-pointer text-xs font-mono tracking-wider">
               <LogOut size={13} />
               Sign Out
