@@ -39,7 +39,7 @@ public sealed class LevantApiClient
     {
         try
         {
-            var probe = await _http.PostAsJsonAsync("", new { action = "ping" }, JsonOpts);
+            var probe = await _http.PostAsJsonAsync("ping", new { action = "ping" }, JsonOpts);
             _restApiConnected = true;
             _lastRestSuccess = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             _logger.LogInformation("[DataLink] REST API reachable");
@@ -63,7 +63,7 @@ public sealed class LevantApiClient
     {
         try
         {
-            var response = await _http.PostAsJsonAsync("", payload, JsonOpts);
+            var response = await _http.PostAsJsonAsync("position", payload, JsonOpts);
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync();
@@ -184,7 +184,7 @@ public sealed class LevantApiClient
                 aircraftType,
             };
 
-            var response = await _http.PostAsJsonAsync("", payload, JsonOpts);
+            var response = await _http.PostAsJsonAsync("start", payload, JsonOpts);
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync();
@@ -210,7 +210,7 @@ public sealed class LevantApiClient
         try
         {
             var payload = new { action = "end", pilotId, callsign, status };
-            await _http.PostAsJsonAsync("", payload, JsonOpts);
+            await _http.PostAsJsonAsync("end", payload, JsonOpts);
         }
         catch (Exception ex)
         {
@@ -224,7 +224,7 @@ public sealed class LevantApiClient
         try
         {
             var payload = new { action = "cancel-bid", pilotId };
-            var response = await _http.PostAsJsonAsync("", payload, JsonOpts);
+            var response = await _http.PostAsJsonAsync("cancel-bid", payload, JsonOpts);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -240,7 +240,7 @@ public sealed class LevantApiClient
         try
         {
             var payload = new { action = "bid", pilotId };
-            var response = await _http.PostAsJsonAsync("", payload, JsonOpts);
+            var response = await _http.PostAsJsonAsync("bid", payload, JsonOpts);
 
             var json = await response.Content.ReadAsStringAsync();
 
