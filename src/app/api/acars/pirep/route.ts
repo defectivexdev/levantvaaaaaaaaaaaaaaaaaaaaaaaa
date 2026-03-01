@@ -18,6 +18,7 @@ import FinanceLog from '@/models/FinanceLog';
 import MaintenanceLog from '@/models/MaintenanceLog';
 import PilotAward from '@/models/PilotAward';
 import { notifyLanding, notifyModeration } from '@/lib/discord';
+import { triggerFlightEnded } from '@/lib/pusher';
 import { checkAndUpgradeRank } from '@/lib/ranks';
 import { checkAndGrantAwards } from '@/lib/awards';
 import { calculateFlightCredits, awardFlightCredits } from '@/lib/xp';
@@ -438,6 +439,9 @@ export async function POST(request: NextRequest) {
         } catch (evErr) {
             console.error('[PIREP] Event legacy match error:', evErr);
         }
+
+        // Broadcast flight completion to live map (removes marker in real-time)
+        await triggerFlightEnded({ callsign, pilotId: pilot.pilot_id, arrivalIcao });
 
         // Discord landing notification
         await notifyLanding(`${pilot.first_name} ${pilot.last_name}`, pilot.pilot_id, arrivalIcao, landingRate, score || 100, callsign);

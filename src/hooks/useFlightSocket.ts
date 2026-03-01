@@ -13,10 +13,12 @@ Pusher.logToConsole = false;
  *
  * Falls back gracefully — if Pusher fails, HTTP polling continues as normal.
  */
-export function useFlightSocket(onFlightUpdate?: (data: any) => void) {
+export function useFlightSocket(onFlightUpdate?: (data: any) => void, onFlightEnded?: (data: { callsign: string; pilotId: string; arrivalIcao: string }) => void) {
     const pusherRef = useRef<Pusher | null>(null);
     const callbackRef = useRef(onFlightUpdate);
+    const endedRef = useRef(onFlightEnded);
     callbackRef.current = onFlightUpdate;
+    endedRef.current = onFlightEnded;
 
     useEffect(() => {
         const key = process.env.NEXT_PUBLIC_PUSHER_KEY;
@@ -33,6 +35,10 @@ export function useFlightSocket(onFlightUpdate?: (data: any) => void) {
 
         channel.bind('flight-updated', (data: any) => {
             callbackRef.current?.(data);
+        });
+
+        channel.bind('flight-ended', (data: any) => {
+            endedRef.current?.(data);
         });
 
         pusherRef.current = pusher;

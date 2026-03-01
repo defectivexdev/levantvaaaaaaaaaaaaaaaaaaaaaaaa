@@ -32,3 +32,12 @@ export async function triggerFlightUpdate(data: Record<string, any>) {
         console.warn('[Pusher] Failed to trigger flight-updated:', err.message);
     }
 }
+
+export async function triggerFlightEnded(data: { callsign: string; pilotId: string; arrivalIcao: string }) {
+    try {
+        const pusher = getPusher();
+        await pusher.trigger('flights', 'flight-ended', data);
+    } catch (err: any) {
+        console.warn('[Pusher] Failed to trigger flight-ended:', err.message);
+    }
+}

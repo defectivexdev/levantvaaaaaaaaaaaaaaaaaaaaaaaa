@@ -20,7 +20,7 @@ export default function MapSection() {
     const [flights, setFlights] = useState<MapFlight[]>([]);
     const [count, setCount] = useState(0);
 
-    // Real-time Pusher — merge incoming flight updates instantly
+    // Real-time Pusher — merge updates and remove completed flights instantly
     useFlightSocket(useCallback((data: any) => {
         if (!data?.callsign) return;
         setFlights(prev => {
@@ -35,6 +35,11 @@ export default function MapSection() {
             // New flight — add it
             return [...prev, data];
         });
+    }, []), useCallback((data: any) => {
+        if (!data?.callsign) return;
+        // Flight completed — remove marker and decrement count
+        setFlights(prev => prev.filter(f => f.callsign !== data.callsign));
+        setCount(prev => Math.max(0, prev - 1));
     }, []));
 
     useEffect(() => {
