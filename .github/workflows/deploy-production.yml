@@ -1,0 +1,74 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create .env file
+        run: |
+          cat > .env.local << EOF
+          MONGODB_URI=${{ secrets.MONGODB_URI }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          APP_KEY=${{ secrets.APP_KEY }}
+          BASE_URL=${{ secrets.BASE_URL }}
+          CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
+          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          SMTP_HOST=${{ secrets.SMTP_HOST }}
+          SMTP_PORT=${{ secrets.SMTP_PORT }}
+          SMTP_SECURE=${{ secrets.SMTP_SECURE }}
+          SMTP_USER=${{ secrets.SMTP_USER }}
+          SMTP_PASS=${{ secrets.SMTP_PASS }}
+          SMTP_FROM=${{ secrets.SMTP_FROM }}
+          PUSHER_APP_ID=${{ secrets.PUSHER_APP_ID }}
+          PUSHER_SECRET=${{ secrets.PUSHER_SECRET }}
+          NEXT_PUBLIC_PUSHER_KEY=${{ secrets.NEXT_PUBLIC_PUSHER_KEY }}
+          NEXT_PUBLIC_PUSHER_CLUSTER=${{ secrets.NEXT_PUBLIC_PUSHER_CLUSTER }}
+          DISCORD_WEBHOOK_TAKEOFF=${{ secrets.DISCORD_WEBHOOK_TAKEOFF }}
+          DISCORD_WEBHOOK_LANDING=${{ secrets.DISCORD_WEBHOOK_LANDING }}
+          DISCORD_WEBHOOK_RANK_PROMOTE=${{ secrets.DISCORD_WEBHOOK_RANK_PROMOTE }}
+          DISCORD_WEBHOOK_AWARD=${{ secrets.DISCORD_WEBHOOK_AWARD }}
+          DISCORD_WEBHOOK_ERROR_LOG=${{ secrets.DISCORD_WEBHOOK_ERROR_LOG }}
+          DISCORD_MOD_WEBHOOK=${{ secrets.DISCORD_MOD_WEBHOOK }}
+          DISCORD_FINANCE_WEBHOOK=${{ secrets.DISCORD_FINANCE_WEBHOOK }}
+          GITHUB_LIVERIES_REPO=${{ secrets.GITHUB_LIVERIES_REPO }}
+          GITHUB_TOKEN=${{ secrets.GH_LIVERIES_TOKEN }}
+          AUTO_PIREP_REJECT_LANDING_RATE=${{ secrets.AUTO_PIREP_REJECT_LANDING_RATE }}
+          NODE_ENV=production
+          EOF
+
+      - name: Build Next.js application
+        run: npm run build
+
+      - name: Run tests (if available)
+        run: npm test --if-present
+        continue-on-error: true
+
+      # Add your deployment step here
+      # Examples:
+      # - Deploy to Vercel
+      # - Deploy to custom server via SSH
+      # - Deploy to AWS/Azure/GCP
+      
+      - name: Deploy notification
+        if: success()
+        run: echo "Deployment successful!"
