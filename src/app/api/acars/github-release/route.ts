@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const GITHUB_REPO = process.env.GITHUB_REPO || 'bunnyyxdev/levant-va-main-webbbbbbbbbbbbbbbbbbbbb';
+const GITHUB_REPO = process.env.GITHUB_REPO || 'defectivexdev/levantvaaaaaaaaaaaaaaaaaaaaaaaa';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
 
 // Force dynamic so the route is never statically cached at build time
