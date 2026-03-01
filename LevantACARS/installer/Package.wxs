@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 
-  <Package Name="Levant ACARS"
+  <Product Id="*"
+           Name="Levant ACARS"
            Version="1.2.1"
            Manufacturer="Levant Virtual Airlines"
            UpgradeCode="B7E3F2A1-4C5D-4E6F-8A9B-1C2D3E4F5A6B"
-           InstallerVersion="500"
-           Scope="perUser">
+           Language="1033">
+
+    <Package InstallerVersion="500" Compressed="yes" InstallScope="perUser" />
 
     <MediaTemplate EmbedCab="yes" />
 
@@ -14,19 +16,21 @@
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 
     <!-- Install directory structure -->
-    <StandardDirectory Id="LocalAppDataFolder">
-      <Directory Id="LEVANTDIR" Name="LevantACARS">
-        <Directory Id="INSTALLDIR" Name="app" />
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="LocalAppDataFolder">
+        <Directory Id="LEVANTDIR" Name="LevantACARS">
+          <Directory Id="INSTALLDIR" Name="app" />
+        </Directory>
       </Directory>
-    </StandardDirectory>
-
-    <!-- Desktop shortcut folder -->
-    <StandardDirectory Id="DesktopFolder" />
-
-    <!-- Start Menu folder -->
-    <StandardDirectory Id="ProgramMenuFolder">
-      <Directory Id="ApplicationProgramsFolder" Name="Levant ACARS" />
-    </StandardDirectory>
+      
+      <!-- Desktop shortcut folder -->
+      <Directory Id="DesktopFolder" Name="Desktop" />
+      
+      <!-- Start Menu folder -->
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="Levant ACARS" />
+      </Directory>
+    </Directory>
 
     <!-- Main feature -->
     <Feature Id="Main" Title="Levant ACARS" Level="1">
@@ -76,5 +80,5 @@
                      KeyPath="yes" />
     </Component>
 
-  </Package>
+  </Product>
 </Wix>
