@@ -446,7 +446,12 @@ export async function POST(request: NextRequest) {
         await triggerFlightEnded({ callsign, pilotId: pilot.pilot_id, arrivalIcao });
 
         // Discord landing notification
-        await notifyLanding(`${pilot.first_name} ${pilot.last_name}`, pilot.pilot_id, arrivalIcao, landingRate, score || 100, callsign);
+        try {
+            await notifyLanding(`${pilot.first_name} ${pilot.last_name}`, pilot.pilot_id, arrivalIcao, landingRate, score || 100, callsign);
+            console.log(`[PIREP] Landing notification sent for ${callsign} - ${landingRate} fpm`);
+        } catch (landingErr) {
+            console.error('[PIREP] Landing notification failed:', landingErr);
+        }
 
         // Rank & awards check
         const newRank = await checkAndUpgradeRank(pilot.id.toString());
