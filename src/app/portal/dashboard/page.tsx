@@ -87,7 +87,7 @@ export default function DashboardPage() {
         try {
             const res = await fetch('/api/portal/active-flights');
             const data = await res.json();
-            setDashboardData(prev => ({ ...prev, activeFlights: data.flights || [] }));
+            setDashboardData(prev => ({ ...prev, activeFlights: data.activeFlights || [] }));
         } catch {}
     }, []);
 
