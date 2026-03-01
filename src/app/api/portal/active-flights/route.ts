@@ -76,28 +76,40 @@ const getActiveFlights = async () => {
     ]);
 
     return flights.map((flight: any) => ({
+        _id: flight._id,
         callsign: flight.callsign,
-        pilot: flight.pilot_name,
-        departure: flight.departure_icao,
-        arrival: flight.arrival_icao,
-        equipment: flight.aircraft_type,
+        pilot: {
+            first_name: flight.pilot_name?.split(' ')[0] || 'Unknown',
+            last_name: flight.pilot_name?.split(' ').slice(1).join(' ') || 'Pilot',
+            pilot_id: flight.pilot_id || 'N/A',
+        },
+        departure_icao: flight.departure_icao,
+        arrival_icao: flight.arrival_icao,
+        aircraft_type: flight.aircraft_type,
         latitude: flight.latitude,
         longitude: flight.longitude,
         altitude: flight.altitude,
         heading: flight.heading,
-        groundSpeed: flight.ground_speed,
+        ground_speed: flight.ground_speed,
         ias: flight.ias,
-        verticalSpeed: flight.vertical_speed,
+        vertical_speed: flight.vertical_speed,
         phase: flight.phase,
         fuel: flight.fuel,
         engines: flight.engines,
         lights: flight.lights,
         pitch: flight.pitch,
         bank: flight.bank,
-        gForce: flight.g_force,
+        g_force: flight.g_force,
         status: flight.status,
         isGlobal: false,
         network: 'LVT',
+        // Legacy properties for map compatibility
+        departure: flight.departure_icao,
+        arrival: flight.arrival_icao,
+        equipment: flight.aircraft_type,
+        groundSpeed: flight.ground_speed,
+        verticalSpeed: flight.vertical_speed,
+        gForce: flight.g_force,
     }));
 };
 
