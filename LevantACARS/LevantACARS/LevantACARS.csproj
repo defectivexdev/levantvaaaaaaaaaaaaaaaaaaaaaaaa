@@ -8,6 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>LevantACARS</AssemblyName>
     <RootNamespace>LevantACARS</RootNamespace>
+    <ApplicationIcon>Assets\favicon.ico</ApplicationIcon>
     <StartupObject>LevantACARS.Program</StartupObject>
 
     <Version>3.3.33</Version>

@@ -49,6 +49,46 @@ jobs:
     - name: Publish ACARS Client
       run: dotnet publish LevantACARS/LevantACARS/LevantACARS.csproj -c Release -r win-x64 --self-contained -o LevantACARS/installer/publish
 
+    - name: Create default config.json template
+      shell: pwsh
+      run: |
+        $config = @{
+          api_base_url = "${{ secrets.BASE_URL }}/api/acars"
+          app_key = "${{ secrets.APP_KEY }}"
+          va_api_key = "LEVANTVIRTUALAIRLINE_WEBI_ACARS"
+          api_timeout = 15
+          ivao_client_id = "${{ secrets.IVAO_CLIENT_ID }}"
+          ivao_client_secret = "${{ secrets.IVAO_CLIENT_SECRET }}"
+          poll_interval_ms = 200
+          heartbeat_interval_ms = 30000
+          telemetry_buffer_interval = 4
+          position_update_interval = 5
+          discord_client_id = "${{ secrets.DISCORD_CLIENT_ID }}"
+          cloudinary_cloud_name = "${{ secrets.CLOUDINARY_CLOUD_NAME }}"
+          airportdb_api_token = "${{ secrets.AIRPORTDB_API_TOKEN }}"
+          log_level = "Information"
+          auth_token = $null
+          pilot_id = $null
+          pilot_name = $null
+          pilot_rank = $null
+          pilot_avatar = $null
+          pilot_hours = 0
+          pilot_xp = 0
+          weight_unit = "lbs"
+        }
+        $configJson = $config | ConvertTo-Json -Depth 10
+        $configJson | Set-Content "LevantACARS/LevantACARS/config.default.json"
+        Write-Host "Created config.default.json with production settings"
+
+    - name: Copy favicon.ico from React UI
+      shell: pwsh
+      run: |
+        $source = "LevantACARS/react-ui/public/img/favicon.ico"
+        $dest = "LevantACARS/LevantACARS/Assets/favicon.ico"
+        if (-not (Test-Path $source)) { throw "favicon.ico not found at $source" }
+        Copy-Item $source $dest -Force
+        Write-Host "Copied favicon.ico from React UI to Assets folder"
+
     - name: Build MSI Installer
       run: |
         $version = "${{ steps.version.outputs.VERSION }}"
