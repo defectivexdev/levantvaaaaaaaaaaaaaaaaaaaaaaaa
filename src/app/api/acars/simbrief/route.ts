@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
 import connectDB from '@/lib/database';
 import { PilotModel } from '@/models';
 
