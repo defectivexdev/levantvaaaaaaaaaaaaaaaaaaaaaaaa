@@ -62,8 +62,8 @@ jobs:
         candle.exe -ext WixUIExtension -ext WixUtilExtension Package.wxs HarvestedFiles.wxs
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         
-        # Link into MSI
-        light.exe -ext WixUIExtension -ext WixUtilExtension -sval Package.wixobj HarvestedFiles.wixobj -o "LevantACARS-$version.msi"
+        # Link into MSI with base directory set to publish folder
+        light.exe -ext WixUIExtension -ext WixUtilExtension -sval -b publish Package.wixobj HarvestedFiles.wixobj -o "LevantACARS-$version.msi"
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
     - name: Upload MSI Artifact
