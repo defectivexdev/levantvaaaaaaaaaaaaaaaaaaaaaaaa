@@ -206,6 +206,8 @@ export async function POST(request: NextRequest) {
             passenger_review: generatePassengerReview(landingRate, score || 100),
         });
 
+        console.log(`[PIREP] Flight record created: ID=${newFlight._id}, Pilot=${pilot.pilot_id}, Callsign=${callsign}, ${departureIcao}→${arrivalIcao}`);
+
         // Event booking auto-match
         try {
             const booking = await EventBooking.findOne({ pilot_id: pilot._id, status: 'booked' }).sort({ booked_at: -1 });
