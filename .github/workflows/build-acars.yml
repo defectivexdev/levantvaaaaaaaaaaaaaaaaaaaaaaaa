@@ -49,8 +49,10 @@ jobs:
         $version = "${{ steps.version.outputs.VERSION }}"
         cd LevantACARS/installer
         
-        # Update Package.wxs with current version
-        (Get-Content Package.wxs) -replace 'Version="[\d\.]+"', "Version=`"$version`"" | Set-Content Package.wxs
+        # Update Package.wxs with current version (preserve UTF-8 encoding)
+        $content = Get-Content Package.wxs -Raw -Encoding UTF8
+        $content = $content -replace 'Version="[\d\.]+"', "Version=`"$version`""
+        [System.IO.File]::WriteAllText("$PWD\Package.wxs", $content, [System.Text.UTF8Encoding]::new($false))
         
         candle.exe -ext WixUIExtension -ext WixUtilExtension Package.wxs -o Package.wixobj
         light.exe -ext WixUIExtension -ext WixUtilExtension Package.wixobj -o "LevantACARS-Setup-v$version.msi"
