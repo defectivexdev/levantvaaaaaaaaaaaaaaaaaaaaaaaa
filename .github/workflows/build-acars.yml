@@ -1,81 +1,175 @@
-name: Build ACARS Client
+﻿name: Deploy Levant ACARS
 
 on:
   push:
     tags:
       - 'v*'
+      - 'acars-*'
   workflow_dispatch:
 
+env:
+  DOTNET_VERSION: "8.0.x"
+  NODE_VERSION: "20"
+  PROJECT_PATH: LevantACARS/LevantACARS/LevantACARS.csproj
+  PUBLISH_DIR: LevantACARS/publish
+  APP_NAME: LevantACARS
+  APP_EXE: LevantACARS.exe
+  APP_ICON: LevantACARS/LevantACARS/Assets/favicon.ico
+  APP_SPLASH: LevantACARS/LevantACARS/Assets/setup-splash.png
+
 jobs:
-  build:
+  deploy:
+    name: Build, Package & Release
     runs-on: windows-latest
-
+    permissions:
+      contents: write
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Extract version from tag
-      id: version
-      run: |
-        if ($env:GITHUB_REF -match 'refs/tags/v(.+)') {
-          $version = $matches[1]
-        } else {
-          $version = "1.2.1"
-        }
-        echo "VERSION=$version" >> $env:GITHUB_OUTPUT
-        echo "Building version: $version"
+      # ── Extract version from tag ────────────────────────────────
+      - name: Get Version from Tag
+        id: version
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          # Handle both 'v1.2.3' and 'acars-v1.2.3' formats
+          if ($tag -match '^acars-v(.+)$') {
+            $ver = $matches[1]
+          } elseif ($tag -match '^v(.+)$') {
+            $ver = $matches[1]
+          } else {
+            $ver = $tag
+          }
+          echo "ver=$ver" >> $env:GITHUB_OUTPUT
+          Write-Host "Extracted version: $ver from tag: $tag"
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '8.0.x'
+      # ── Build React UI ──────────────────────────────────────────
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
 
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v2
+      - name: Install React dependencies
+        working-directory: LevantACARS/react-ui
+        run: npm ci
 
-    - name: Restore NuGet packages
-      run: nuget restore LevantACARS/LevantACARS.sln
+      - name: Create React env file
+        shell: pwsh
+        run: |
+          @"
+          VITE_IVAO_CLIENT_ID=${{ secrets.IVAO_CLIENT_ID }}
+          VITE_IVAO_CLIENT_SECRET=${{ secrets.IVAO_CLIENT_SECRET }}
+          VITE_API_BASE_URL=${{ secrets.BASE_URL }}/api/acars
+          VITE_CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          "@ | Set-Content LevantACARS/react-ui/.env
 
-    - name: Build ACARS Client
-      run: msbuild LevantACARS/LevantACARS.sln /p:Configuration=Release /p:Platform="Any CPU"
+      - name: Build React
+        working-directory: LevantACARS/react-ui
+        run: npm run build
 
-    - name: Setup WiX Toolset v3
-      run: |
-        choco install wixtoolset -y
-        echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Copy React dist to wwwroot
+        shell: pwsh
+        run: |
+          $src = "LevantACARS/react-ui/dist"
+          $dst = "LevantACARS/LevantACARS/wwwroot"
+          if (Test-Path $dst) { Remove-Item $dst -Recurse -Force }
+          Copy-Item $src $dst -Recurse
 
-    - name: Publish ACARS Client
-      run: dotnet publish LevantACARS/LevantACARS/LevantACARS.csproj -c Release -r win-x64 --self-contained -o LevantACARS/installer/publish
+      - name: Create default config.json template
+        shell: pwsh
+        run: |
+          $config = @{
+            api_base_url = "${{ secrets.BASE_URL }}/api/acars"
+            app_key = "${{ secrets.APP_KEY }}"
+            va_api_key = "LEVANTVIRTUALAIRLINE_WEBI_ACARS"
+            api_timeout = 15
+            ivao_client_id = "${{ secrets.IVAO_CLIENT_ID }}"
+            ivao_client_secret = "${{ secrets.IVAO_CLIENT_SECRET }}"
+            poll_interval_ms = 200
+            heartbeat_interval_ms = 30000
+            telemetry_buffer_interval = 4
+            position_update_interval = 5
+            discord_client_id = "${{ secrets.DISCORD_CLIENT_ID }}"
+            cloudinary_cloud_name = "${{ secrets.CLOUDINARY_CLOUD_NAME }}"
+            airportdb_api_token = "${{ secrets.AIRPORTDB_API_TOKEN }}"
+            log_level = "Information"
+            auth_token = $null
+            pilot_id = $null
+            pilot_name = $null
+            pilot_rank = $null
+            pilot_avatar = $null
+            pilot_hours = 0
+            pilot_xp = 0
+            weight_unit = "lbs"
+          }
+          $configJson = $config | ConvertTo-Json -Depth 10
+          $configJson | Set-Content "LevantACARS/LevantACARS/config.default.json"
+          Write-Host "Created config.default.json with production settings"
 
-    - name: Build MSI Installer
-      run: |
-        $version = "${{ steps.version.outputs.VERSION }}"
-        cd LevantACARS/installer
-        
-        # Harvest all published files
-        heat.exe dir publish -cg PublishedFiles -gg -sfrag -srd -dr INSTALLDIR -out HarvestedFiles.wxs
-        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-        
-        # Compile WiX sources
-        candle.exe -ext WixUIExtension -ext WixUtilExtension Package.wxs HarvestedFiles.wxs
-        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-        
-        # Link into MSI
-        light.exe -ext WixUIExtension -ext WixUtilExtension -sval Package.wixobj HarvestedFiles.wixobj -o "LevantACARS-Setup-v$version.msi"
-        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      # ── Generate favicon.ico from scratch (never stored in git) ─
+      - name: Generate favicon.ico
+        run: |
+          pip install Pillow
+          python LevantACARS/scripts/gen_icon.py
 
-    - name: Upload MSI Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: LevantACARS-Installer-v${{ steps.version.outputs.VERSION }}
-        path: LevantACARS/installer/LevantACARS-Setup-v${{ steps.version.outputs.VERSION }}.msi
+      - name: Verify Generated Icon
+        shell: pwsh
+        run: |
+          $ico = "${{ env.APP_ICON }}"
+          if (-not (Test-Path $ico)) { throw "gen_icon.py failed — $ico not found" }
+          $sz = (Get-Item $ico).Length
+          if ($sz -lt 10000) { throw "Icon too small ($sz bytes) — likely corrupt" }
+          $hash = (Get-FileHash $ico -Algorithm SHA256).Hash
+          Write-Host "favicon.ico OK: $sz bytes, SHA256=$hash"
+          Write-Host "This icon was GENERATED FRESH by gen_icon.py — not from git"
 
-    - name: Create GitHub Release
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: softprops/action-gh-release@v1
-      with:
-        files: LevantACARS/installer/LevantACARS-Setup-v${{ steps.version.outputs.VERSION }}.msi
-        draft: false
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # ── Build & Publish .NET ────────────────────────────────────
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore & Publish
+        run: >
+          dotnet publish ${{ env.PROJECT_PATH }}
+          -c Release
+          -r win-x64
+          --self-contained
+          -p:PublishTrimmed=false
+          -p:PublishReadyToRun=false
+          -p:Version=${{ steps.version.outputs.ver }}
+          -o ${{ env.PUBLISH_DIR }}
+
+      - name: Install Velopack CLI
+        run: dotnet tool install -g vpk
+
+      - name: Velopack Pack
+        run: >
+          vpk pack
+          -u ${{ env.APP_NAME }}
+          -v ${{ steps.version.outputs.ver }}
+          -p ${{ env.PUBLISH_DIR }}
+          -e ${{ env.APP_EXE }}
+          --icon ${{ env.APP_ICON }}
+          --splashImage ${{ env.APP_SPLASH }}
+
+      # ── GitHub Release ──────────────────────────────────────────
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Levant ACARS ${{ github.ref_name }}
+          generate_release_notes: true
+          body: |
+            ## Levant ACARS ${{ github.ref_name }}
+
+            ### Installation
+            - **New install:** Download `LevantACARS-Setup.exe` below.
+            - **Auto-update:** Existing installations update automatically via Velopack.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            Releases/*
+          draft: false
+          prerelease: false
