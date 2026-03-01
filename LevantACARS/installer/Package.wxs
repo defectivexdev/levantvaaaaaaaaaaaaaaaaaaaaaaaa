@@ -53,8 +53,7 @@
                 Name="Levant ACARS"
                 Description="Levant VA Flight Tracking Client"
                 Target="[INSTALLDIR]LevantACARS.exe"
-                WorkingDirectory="INSTALLDIR"
-                Icon="AppIcon" />
+                WorkingDirectory="INSTALLDIR" />
       <RegistryValue Root="HKCU"
                      Key="Software\LevantVA\ACARS"
                      Name="DesktopShortcut"
@@ -68,8 +67,7 @@
                 Name="Levant ACARS"
                 Description="Levant VA Flight Tracking Client"
                 Target="[INSTALLDIR]LevantACARS.exe"
-                WorkingDirectory="INSTALLDIR"
-                Icon="AppIcon" />
+                WorkingDirectory="INSTALLDIR" />
       <RemoveFolder Id="CleanStartMenu" On="uninstall" />
       <RegistryValue Root="HKCU"
                      Key="Software\LevantVA\ACARS"
@@ -77,9 +75,6 @@
                      Type="integer" Value="1"
                      KeyPath="yes" />
     </Component>
-
-    <!-- Icon -->
-    <Icon Id="AppIcon" SourceFile="LevantACARS\LevantACARS\Assets\favicon.ico" />
 
   </Package>
 </Wix>
