@@ -91,23 +91,115 @@ export async function GET(request: NextRequest) {
                 response = await handlePilotStats(pilotId);
                 break;
             }
-            default:
-                response = NextResponse.json({
-                    name: 'Levant Virtual Airlines ACARS API',
-                    version: '1.0.0',
-                    status: 'online',
-                    database: 'MongoDB',
-                    endpoints: {
-                        auth: 'POST /api/acars { action: "auth", pilotId, password }',
-                        bid: 'POST /api/acars { action: "bid", pilotId }',
-                        start: 'POST /api/acars { action: "start", sessionToken, pilotId, callsign, departureIcao, arrivalIcao, aircraftType }',
-                        position: 'POST /api/acars { action: "position", sessionToken, pilotId, callsign, latitude, longitude, altitude, heading, groundSpeed, status }',
-                        pirep: 'POST /api/acars { action: "pirep", sessionToken, pilotId, callsign, departureIcao, arrivalIcao, aircraftType, flightTimeMinutes, landingRate, fuelUsed, distanceNm }',
-                        end: 'POST /api/acars { action: "end", pilotId, callsign }',
-                        traffic: 'GET /api/acars?action=traffic',
-                        pilotStats: 'GET /api/acars?action=pilot-stats&pilotId=LVT001',
-                    },
+            default: {
+                const [activeFlights, totalFlights, totalPilots] = await Promise.all([
+                    ActiveFlight.countDocuments(),
+                    Flight.countDocuments(),
+                    Pilot.countDocuments(),
+                ]);
+                const now = new Date().toUTCString();
+                const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Levant VA — ACARS API</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0a0c10;color:#e2e8f0;font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;padding:40px 20px}
+  .container{max-width:860px;margin:0 auto}
+  .header{display:flex;align-items:center;gap:16px;margin-bottom:36px}
+  .logo{width:48px;height:48px;background:linear-gradient(135deg,#d4af37,#cd7f32);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+  .title{font-size:24px;font-weight:700;color:#fff;letter-spacing:-0.5px}
+  .subtitle{font-size:13px;color:#64748b;margin-top:2px}
+  .badge{display:inline-flex;align-items:center;gap:6px;background:#0f2718;border:1px solid #166534;color:#4ade80;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:0.5px}
+  .badge::before{content:'';width:7px;height:7px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
+  .stat{background:#111318;border:1px solid #1e2330;border-radius:12px;padding:18px 20px}
+  .stat-value{font-size:28px;font-weight:700;color:#d4af37;font-variant-numeric:tabular-nums}
+  .stat-label{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.8px;margin-top:4px}
+  .section{background:#111318;border:1px solid #1e2330;border-radius:12px;margin-bottom:16px;overflow:hidden}
+  .section-header{padding:14px 20px;border-bottom:1px solid #1e2330;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#64748b}
+  .endpoint{display:grid;grid-template-columns:90px 1fr;gap:12px;padding:12px 20px;border-bottom:1px solid #0d1117;align-items:start}
+  .endpoint:last-child{border-bottom:none}
+  .method{font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;font-family:monospace;text-align:center;width:fit-content}
+  .method.post{background:#1a1033;color:#a78bfa;border:1px solid #4c1d95}
+  .method.get{background:#0c2340;color:#60a5fa;border:1px solid #1e3a5f}
+  .ep-path{font-family:monospace;font-size:13px;color:#e2e8f0;font-weight:600;margin-bottom:3px}
+  .ep-desc{font-size:12px;color:#64748b}
+  .ep-params{font-family:monospace;font-size:11px;color:#475569;margin-top:4px;line-height:1.6}
+  .footer{text-align:center;font-size:12px;color:#334155;margin-top:28px}
+  @media(max-width:600px){.stats{grid-template-columns:1fr}.endpoint{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">✈</div>
+    <div>
+      <div class="title">Levant VA — ACARS API</div>
+      <div class="subtitle">Aircraft Communications &amp; Reporting System &nbsp;·&nbsp; v1.3.0</div>
+    </div>
+    <div style="margin-left:auto"><span class="badge">ONLINE</span></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-value">${activeFlights}</div><div class="stat-label">Active Flights</div></div>
+    <div class="stat"><div class="stat-value">${totalPilots}</div><div class="stat-label">Registered Pilots</div></div>
+    <div class="stat"><div class="stat-value">${totalFlights}</div><div class="stat-label">Total PIREPs</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">POST Endpoints &nbsp;·&nbsp; /api/acars</div>
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <div><div class="ep-path">action: "auth"</div><div class="ep-desc">Authenticate pilot and get session token</div><div class="ep-params">{ pilotId, password }</div></div>
+    </div>
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <div><div class="ep-path">action: "bid"</div><div class="ep-desc">Fetch active flight plan / bid</div><div class="ep-params">{ pilotId }</div></div>
+    </div>
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <div><div class="ep-path">action: "start"</div><div class="ep-desc">Notify flight departure and create tracking record</div><div class="ep-params">{ sessionToken, pilotId, callsign, departureIcao, arrivalIcao, aircraftType }</div></div>
+    </div>
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <div><div class="ep-path">action: "position"</div><div class="ep-desc">Send live position update (every ~5s)</div><div class="ep-params">{ sessionToken, pilotId, callsign, latitude, longitude, altitude, heading, groundSpeed, status, phase }</div></div>
+    </div>
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <div><div class="ep-path">action: "pirep"</div><div class="ep-desc">Submit completed flight report</div><div class="ep-params">{ sessionToken, pilotId, callsign, departureIcao, arrivalIcao, aircraftType, flightTimeMinutes, landingRate, fuelUsed, distanceNm, score, timestamp, signature }</div></div>
+    </div>
+    <div class="endpoint">
+      <span class="method post">POST</span>
+      <div><div class="ep-path">action: "end"</div><div class="ep-desc">Notify flight ended / cancelled</div><div class="ep-params">{ pilotId, callsign }</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">GET Endpoints &nbsp;·&nbsp; /api/acars?action=</div>
+    <div class="endpoint">
+      <span class="method get">GET</span>
+      <div><div class="ep-path">action=traffic</div><div class="ep-desc">Fetch all active flights for live map</div></div>
+    </div>
+    <div class="endpoint">
+      <span class="method get">GET</span>
+      <div><div class="ep-path">action=pilot-stats</div><div class="ep-desc">Fetch pilot statistics</div><div class="ep-params">?pilotId=LVT001</div></div>
+    </div>
+  </div>
+
+  <div class="footer">Levant Virtual Airlines &nbsp;·&nbsp; ${now}</div>
+</div>
+</body>
+</html>`;
+                response = new NextResponse(html, {
+                    status: 200,
+                    headers: { 'Content-Type': 'text/html; charset=utf-8' },
                 });
+                break;
+            }
         }
 
         Object.entries(corsHeaders()).forEach(([k, v]) => response.headers.set(k, v));
@@ -530,7 +622,8 @@ async function handlePosition(params: {
         }
 
         // Check for Takeoff Notification
-        if (flight && !flight.takeoff_notified && status === 'Airborne') {
+        // ACARS client sends FlightPhase.ToString() — trigger only on 'Takeoff' phase
+        if (flight && !flight.takeoff_notified && (phase === 'Takeoff' || status === 'Takeoff')) {
             flight.takeoff_notified = true;
             await flight.save();
 
