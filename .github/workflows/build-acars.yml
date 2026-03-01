@@ -14,6 +14,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Extract version from tag
+      id: version
+      run: |
+        if ($env:GITHUB_REF -match 'refs/tags/v(.+)') {
+          $version = $matches[1]
+        } else {
+          $version = "1.2.1"
+        }
+        echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+        echo "Building version: $version"
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -35,21 +46,26 @@ jobs:
 
     - name: Build MSI Installer
       run: |
+        $version = "${{ steps.version.outputs.VERSION }}"
         cd LevantACARS/installer
+        
+        # Update Package.wxs with current version
+        (Get-Content Package.wxs) -replace 'Version="[\d\.]+"', "Version=`"$version`"" | Set-Content Package.wxs
+        
         candle.exe -ext WixUIExtension -ext WixUtilExtension Package.wxs -o Package.wixobj
-        light.exe -ext WixUIExtension -ext WixUtilExtension Package.wixobj -o LevantACARS-Setup.msi
+        light.exe -ext WixUIExtension -ext WixUtilExtension Package.wixobj -o "LevantACARS-Setup-v$version.msi"
 
     - name: Upload MSI Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: LevantACARS-Installer
-        path: LevantACARS/installer/LevantACARS-Setup.msi
+        name: LevantACARS-Installer-v${{ steps.version.outputs.VERSION }}
+        path: LevantACARS/installer/LevantACARS-Setup-v${{ steps.version.outputs.VERSION }}.msi
 
     - name: Create GitHub Release
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
-        files: LevantACARS/installer/LevantACARS-Setup.msi
+        files: LevantACARS/installer/LevantACARS-Setup-v${{ steps.version.outputs.VERSION }}.msi
         draft: false
         prerelease: false
       env:
