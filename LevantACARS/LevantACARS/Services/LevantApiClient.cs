@@ -130,7 +130,7 @@ public sealed class LevantApiClient
                 signature,
             };
 
-            var response = await _http.PostAsJsonAsync("", payload, JsonOpts);
+            var response = await _http.PostAsJsonAsync("pirep", payload, JsonOpts);
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync();
