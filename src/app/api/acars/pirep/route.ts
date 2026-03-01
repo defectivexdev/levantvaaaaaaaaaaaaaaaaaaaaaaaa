@@ -70,15 +70,36 @@ export async function POST(request: NextRequest) {
         if (!pilot) return NextResponse.json({ error: 'Pilot not found' }, { status: 404, headers: corsHeaders() });
         if (pilot.status === 'Blacklist') return NextResponse.json({ error: 'Account blacklisted' }, { status: 403, headers: corsHeaders() });
 
-        // Hard landing flag - notify moderation but don't auto-reject
+        // Hard landing flag
         if (landingRate < -800) {
             notifyModeration('hard_landing', `${pilot.first_name} ${pilot.last_name}`, pilotId,
                 `Landing rate: **${landingRate} fpm** on ${callsign} (${departureIcao}→${arrivalIcao})`
             ).catch(() => {});
         }
 
-        // Auto-rejection disabled - all flights are submitted regardless of landing rate
-        // Admins can manually review and reject if needed
+        // Auto-reject PIREPs with landing rate of -700 fpm or worse
+        const isRejected = landingRate <= -700;
+        if (isRejected) {
+            await Flight.create({
+                pilot_id: pilot._id,
+                pilot_name: `${pilot.first_name} ${pilot.last_name}`,
+                flight_number: flightNumber || 'N/A', callsign,
+                departure_icao: departureIcao, arrival_icao: arrivalIcao,
+                alternate_icao: alternateIcao, route, aircraft_type: aircraftType,
+                flight_time: flightTimeMinutes, landing_rate: landingRate,
+                fuel_used: fuelUsed, distance: distanceNm,
+                pax: pax || 0, cargo: cargo || 0, score: score || 100,
+                deductions: log?.deductions || [], log,
+                approved_status: 2, comments, acars_version: resolvedAcarsVersion,
+                submitted_at: new Date(),
+            });
+            await ActiveFlight.deleteOne({ pilot_id: pilot._id, callsign });
+            await Bid.deleteMany({ pilot_id: pilot._id, status: { $in: ['Active', 'InProgress'] } });
+            return NextResponse.json({
+                success: true,
+                message: `PIREP REJECTED! Landing rate of ${landingRate} fpm exceeds threshold of -700 fpm.`
+            }, { headers: corsHeaders() });
+        }
 
         // --- ECONOMY ---
         const config = await getConfig();
