@@ -8,7 +8,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>LevantACARS</AssemblyName>
     <RootNamespace>LevantACARS</RootNamespace>
-    <ApplicationIcon>Assets\favicon.ico</ApplicationIcon>
     <StartupObject>LevantACARS.Program</StartupObject>
 
     <Version>3.3.33</Version>
@@ -70,9 +69,6 @@
   <!-- Assets copied to output -->
   <ItemGroup>
     <Resource Include="Assets\**" />
-    <None Update="Assets\favicon.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Assets\favicon.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
