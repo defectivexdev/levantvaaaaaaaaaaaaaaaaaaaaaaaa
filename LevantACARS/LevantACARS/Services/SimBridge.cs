@@ -199,18 +199,17 @@ public class SimBridge : IDisposable
         {
             try
             {
-                _logger.LogInformation("[SimBridge] Checking for updates...");
-                PostMessage(new { type = "updateStatus", status = "checking", message = "Checking for updates..." });
-
                 var mgr = new Velopack.UpdateManager("https://levantva.com/releases");
 
-                // Guard: if app was not installed via Velopack, skip update
+                // Guard: if app was not installed via Velopack (e.g., MSI installation), silently skip update check
                 if (!mgr.IsInstalled)
                 {
-                    _logger.LogWarning("[SimBridge] App is not installed via Velopack — skipping update");
-                    PostMessage(new { type = "updateStatus", status = "error", message = "Auto-update unavailable in this build." });
+                    _logger.LogInformation("[SimBridge] App is not installed via Velopack (MSI installation) — skipping update check");
                     return;
                 }
+
+                _logger.LogInformation("[SimBridge] Checking for updates...");
+                PostMessage(new { type = "updateStatus", status = "checking", message = "Checking for updates..." });
 
                 var info = await mgr.CheckForUpdatesAsync();
 
