@@ -49,13 +49,12 @@ jobs:
         $version = "${{ steps.version.outputs.VERSION }}"
         cd LevantACARS/installer
         
-        # Update Package.wxs with current version (preserve UTF-8 encoding)
-        $content = Get-Content Package.wxs -Raw -Encoding UTF8
-        $content = $content -replace 'Version="[\d\.]+"', "Version=`"$version`""
-        [System.IO.File]::WriteAllText("$PWD\Package.wxs", $content, [System.Text.UTF8Encoding]::new($false))
-        
+        # Build MSI without modifying Package.wxs (version is already set to 1.2.1)
         candle.exe -ext WixUIExtension -ext WixUtilExtension Package.wxs -o Package.wixobj
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        
         light.exe -ext WixUIExtension -ext WixUtilExtension Package.wixobj -o "LevantACARS-Setup-v$version.msi"
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
     - name: Upload MSI Artifact
       uses: actions/upload-artifact@v4
