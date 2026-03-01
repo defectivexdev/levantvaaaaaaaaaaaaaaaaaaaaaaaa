@@ -12,13 +12,15 @@ export async function GET() {
     try {
         await connectDB();
 
-        const flights = await FlightModel.find({ pilot_id: session.id })
+        const flights = await FlightModel.find({ approved_status: { $in: [0, 1] } })
             .sort({ submitted_at: -1 })
             .limit(10)
+            .populate('pilot_id', 'first_name last_name pilot_id')
             .lean();
 
         const formattedReports = flights.map((f: any) => ({
             ...f,
+            pilot: f.pilot_id || { first_name: 'Unknown', last_name: 'Pilot', pilot_id: 'N/A' },
             id: `PIREP-${(f._id?.toString() || '').slice(-6).toUpperCase()}`,
             route: `${f.departure_icao} → ${f.arrival_icao}`,
             aircraft: f.aircraft_type,
