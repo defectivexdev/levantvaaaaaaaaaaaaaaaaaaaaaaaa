@@ -17,6 +17,12 @@ export default function BookFlightPage() {
     const [pageLoading, setPageLoading] = useState(true);
 
     useEffect(() => {
+        if (!message) return;
+        const t = setTimeout(() => setMessage(null), 10000);
+        return () => clearTimeout(t);
+    }, [message]);
+
+    useEffect(() => {
         Promise.all([
             fetch('/api/auth/me').then(r => r.json()).catch(() => ({ user: null })),
             fetch('/api/portal/simbrief-to-bid').then(r => r.json()).catch(() => ({ bid: null })),
